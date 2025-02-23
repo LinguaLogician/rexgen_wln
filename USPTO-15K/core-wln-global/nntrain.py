@@ -6,7 +6,7 @@ from ioutils import *
 import math, sys, random
 from collections import Counter
 from optparse import OptionParser
-from functools import partial
+from functools import partial, reduce
 import threading
 from multiprocessing import Queue
 import pickle
@@ -104,7 +104,7 @@ backprop = optimizer.apply_gradients(grads_and_vars)
 tf.global_variables_initializer().run(session=session)
 size_func = lambda v: reduce(lambda x, y: x*y, v.get_shape().as_list())
 n = sum(size_func(v) for v in tf.trainable_variables())
-print "Model size: %dK" % (n/1000,)
+print("Model size: %dK" % (n/1000,))
 
 queue = Queue()
 
@@ -117,14 +117,14 @@ with open(opts.data_path) as f:
         edits = items[2]
         data.append((react, edits))
 
-print "Training set size:", len(data)
+print("Training set size:", len(data))
 
 def read_data(train, coord):
     it = 0
     train_len = len(train)
     while True:
         src_batch, edit_batch = [], []
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             react, edits = data[it]
             src_batch.append(react)
             edit_batch.append(edits)
@@ -150,21 +150,21 @@ try:
         it += 1
         _, cur_topk, pnorm, gnorm = session.run([backprop, topk, param_norm, grad_norm], feed_dict={_lr:lr})
         sp_label = queue.get()
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             pre = 0
-            for j in xrange(NK):
+            for j in range(NK):
                 if cur_topk[i,j] in sp_label[i]:
                     pre += 1
             if len(sp_label[i]) == pre: sum_err += 1
             pre = 0
-            for j in xrange(NK0):
+            for j in range(NK0):
                 if cur_topk[i,j] in sp_label[i]:
                     pre += 1
             if len(sp_label[i]) == pre: sum_acc += 1
         sum_gnorm += gnorm
 
         if it % 50 == 0:
-            print "Acc@10: %.4f, Acc@20: %.4f, Param Norm: %.2f, Grad Norm: %.2f" % (sum_acc / (50 * batch_size), sum_err / (50 * batch_size), pnorm, sum_gnorm / 50) 
+            print("Acc@10: %.4f, Acc@20: %.4f, Param Norm: %.2f, Grad Norm: %.2f" % (sum_acc / (50 * batch_size), sum_err / (50 * batch_size), pnorm, sum_gnorm / 50))
             sys.stdout.flush()
             sum_acc, sum_err, sum_gnorm = 0.0, 0.0, 0.0
         if it % 10000 == 0:
@@ -173,7 +173,7 @@ try:
             #print "Model Saved!"
             break
 except Exception as e:
-    print e
+    print(e)
     coord.request_stop(e)
 finally:
     saver.save(session, opts.save_path + "/model.final")

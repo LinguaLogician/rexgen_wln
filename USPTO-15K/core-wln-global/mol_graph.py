@@ -90,7 +90,7 @@ def get_mask(arr_list):
     N = max([x.shape[0] for x in arr_list])
     a = np.zeros((len(arr_list), N))
     for i, arr in enumerate(arr_list):
-        for j in xrange(arr.shape[0]):
+        for j in range(arr.shape[0]):
             a[i][j] = 1
     return a
 
@@ -102,9 +102,9 @@ def smiles2graph_list(smiles_list, idxfunc=lambda x:x.GetIdx()):
 if __name__ == "__main__":
     np.set_printoptions(threshold='nan')
     a,b,c,d,e,f = smiles2graph_list(["c1cccnc1",'c1nccc2n1ccc2'])
-    print a
-    print b
-    print c
-    print d
-    print e
-    print f
+    print(a)
+    print(b)
+    print(c)
+    print(d)
+    print(e)
+    print(f)

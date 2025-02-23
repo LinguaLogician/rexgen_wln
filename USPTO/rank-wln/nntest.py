@@ -80,7 +80,7 @@ def read_data(coord):
         data.append((r,cbonds))
      
     data_len = len(data)
-    for it in xrange(data_len):
+    for it in range(data_len):
         reaction, cand_bonds = data[it]
         r = reaction.split('>')[0]
         ncore = core_size
@@ -119,14 +119,14 @@ try:
             for x,y,t in conf[idx]:
                 x,y = x+1,y+1
                 if ((x,y) not in rbonds and t > 0) or ((x,y) in rbonds and rbonds[(x,y)] != t):
-                    print '%d-%d-%d' % (x,y,t),
-            print '|',
-        print
+                    print('%d-%d-%d' % (x,y,t),)
+            print('|'),
+        print()
         if total % 1000 == 0:
             sys.stdout.flush()
         
 except Exception as e:
-    print e
+    print(e)
     coord.request_stop(e)
 finally:
     coord.request_stop()

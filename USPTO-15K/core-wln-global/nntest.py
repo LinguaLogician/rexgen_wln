@@ -100,9 +100,9 @@ with open(opts.data_path) as f:
 
 def read_data(data, coord):
     it = 0
-    for it in xrange(0, len(data), batch_size):
+    for it in range(0, len(data), batch_size):
         src_batch, edit_batch = [], []
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             react = data[it+i][0]
             edits = data[it+i][1]
             src_batch.append(react)
@@ -127,22 +127,22 @@ try:
         percentage = np.cumsum(cur_value, -1) / np.sum(cur_value, -1, keepdims=True)
         cur_dim = int(math.sqrt(cur_dim))
         sp_label = queue.get()
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             pre,rec = 0,0
-            for j in xrange(NK):
+            for j in range(NK):
                 k = cur_topk[i,j]
                 x = k / cur_dim + 1
                 y = k % cur_dim + 1
                 if x < y:
-                    print "%d-%d" % (x, y),
+                    print ("%d-%d" % (x, y),)
                 if cur_topk[i,j] in sp_label[i]:
                     pre += 1
-            print
+            print()
             if len(sp_label[i]) == pre: 
                 sum_acc += 1
     #print "Acc: %.4f" % (sum_acc / 3000,)
 except Exception as e:
-    print e
+    print(e)
     coord.request_stop(e)
 finally:
     coord.request_stop()

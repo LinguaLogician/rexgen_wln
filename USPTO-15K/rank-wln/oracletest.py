@@ -102,7 +102,7 @@ def read_data(coord):
         data.append((r,cand_bonds,gbonds))
      
     data_len = len(data)
-    for it in xrange(data_len):
+    for it in range(data_len):
         reaction, cand_bonds, gbonds = data[it]
         r = reaction.split('>')[0]
         ncore = core_size

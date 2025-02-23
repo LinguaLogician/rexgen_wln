@@ -1,3 +1,5 @@
+from functools import reduce
+
 import tensorflow as tf
 from utils.nn import linearND, linear
 from mol_graph import atom_fdim as adim, bond_fdim as bdim, max_nb, smiles2graph
@@ -72,7 +74,7 @@ backprop = optimizer.apply_gradients(grads_and_vars)
 tf.global_variables_initializer().run(session=session)
 size_func = lambda v: reduce(lambda x, y: x*y, v.get_shape().as_list())
 n = sum(size_func(v) for v in tf.trainable_variables())
-print "Model size: %dK" % (n/1000,)
+print ("Model size: %dK" % (n/1000,))
 
 def read_data(coord):
     data = []
@@ -143,13 +145,13 @@ try:
         sum_gnorm += gnorm
 
         if it % 200 == 0 and it > 0:
-            print "Training Error: %.4f, Param Norm: %.2f, Grad Norm: %.2f" % (sum_err / 200, pnorm, sum_gnorm / 200) 
+            print ("Training Error: %.4f, Param Norm: %.2f, Grad Norm: %.2f" % (sum_err / 200, pnorm, sum_gnorm / 200) )
             sys.stdout.flush()
             sum_err, sum_gnorm = 0.0, 0.0
         if it % 10000 == 0 and it > 0:
             saver.save(session, opts.save_path + "/model.ckpt-%d" % it)
             lr *= 0.9
-            print "Learning Rate: %.6f" % lr
+            print ("Learning Rate: %.6f" % lr)
 
 except Exception as e:
     coord.request_stop(e)

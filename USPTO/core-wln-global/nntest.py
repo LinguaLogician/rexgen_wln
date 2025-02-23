@@ -95,9 +95,9 @@ def read_data(path, coord):
             r,e = line.strip("\r\n ").split()
             data.append((r,e))
             
-    for it in xrange(0, len(data), batch_size):
+    for it in range(0, len(data), batch_size):
         src_batch, edit_batch = [], []
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             react,_,p = data[it][0].split('>')
             src_batch.append(react)
             edits = data[it][1]
@@ -131,14 +131,14 @@ try:
     while not coord.should_stop():
         cur_topk, cur_dim = session.run([topk, label_dim])
         cur_dim = int(math.sqrt(cur_dim))
-        for i in xrange(batch_size):
+        for i in range(batch_size):
             ratoms = queue.get()
-            for j in xrange(NK):
+            for j in range(NK):
                 k = cur_topk[i,j]
                 x = k / cur_dim + 1
                 y = k % cur_dim + 1
                 if x < y and  x in ratoms and y in ratoms:
-                    print "%d-%d" % (x, y),
+                    print("%d-%d" % (x, y)),
             print
 except Exception as e:
     sys.stderr.write(e)

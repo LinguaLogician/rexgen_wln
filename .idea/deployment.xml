@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="liangtao@172.19.90.92:22 rexgen_wln" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="liangtao@172.19.90.92:22 molecular">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="liangtao@172.19.90.92:22 rexgen_wln">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/liangtao/Development/ChemistrySpace/rexgen_wln" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

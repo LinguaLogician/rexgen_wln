@@ -33,4 +33,4 @@ for line in cand:
 
     if set(gold_bonds) <= set(cand_bonds[:8]):
         good += 1.0
-print good / tot
+print( good / tot)

@@ -18,4 +18,4 @@ for line in cand:
         gold_bonds.append((int(x),int(y)))
     if set(gold_bonds) <= set(cand_bonds[:6]):
         good += 1.0
-print good / tot
+print(good / tot)

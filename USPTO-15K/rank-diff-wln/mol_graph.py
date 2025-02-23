@@ -40,7 +40,7 @@ def search(buf, cur_bonds, core_bonds, free_vals, depth):
         free_vals[y] += tval
         cur_bonds.pop()
     else:
-        for k in xrange(4):
+        for k in range(4):
             if k > free_vals[x] or k > free_vals[y]:
                 break
             cur_bonds.append((x,y,k))
@@ -65,7 +65,7 @@ def packnb(arr_list):
 def floodfill(cur_id, cur_label, comp, core_bonds):
     comp[cur_id] = cur_label
     x,y = core_bonds[cur_id]
-    for i in xrange(len(core_bonds)):
+    for i in range(len(core_bonds)):
         if comp[i] >= 0: continue
         u,v = core_bonds[i]
         if x == u or x == v or y == u or y == v:
@@ -145,16 +145,16 @@ def smiles2graph(rsmiles, core_bonds, gold_bonds, cutoff=500, idxfunc=lambda x:x
     #Get connected components in core bonds
     comp = [-1] * len(core_bonds)
     tot = 0
-    for i in xrange(len(core_bonds)):
+    for i in range(len(core_bonds)):
         if comp[i] == -1:
             floodfill(i, tot, comp, core_bonds)
             tot += 1
     
     #No new rings
     core_configs = []
-    for cur_id in xrange(tot):
+    for cur_id in range(tot):
         cand_bonds = []
-        for i in xrange(len(core_bonds)):
+        for i in range(len(core_bonds)):
             x,y = core_bonds[i]
             if (x,y) in rbonds and rbonds[(x,y)] == 4:
                 cand_bonds.append((x,y,4))
@@ -170,7 +170,7 @@ def smiles2graph(rsmiles, core_bonds, gold_bonds, cutoff=500, idxfunc=lambda x:x
     for ring in new_rings:
         ring_edges = set()
         bad = 0
-        for i in xrange(len(ring)):
+        for i in range(len(ring)):
             x,y = min(ring[i],ring[i-1]), max(ring[i],ring[i-1])
             ring_edges.add( (x,y) )
             if (x,y) in rbonds and rbonds[(x,y)] == 4:
@@ -184,7 +184,7 @@ def smiles2graph(rsmiles, core_bonds, gold_bonds, cutoff=500, idxfunc=lambda x:x
                 break
 
         cand_bonds = []
-        for i in xrange(len(core_bonds)):
+        for i in range(len(core_bonds)):
             x,y = core_bonds[i]
             if (x,y) in rbonds and rbonds[(x,y)] == 4 or (x,y) in ring_edges:
                 cand_bonds.append((x,y,4))
@@ -311,15 +311,15 @@ def smiles2graph_test(rsmiles, core_bonds, idxfunc=lambda x:x.GetIntProp('molAto
     #Get connected components in core bonds
     comp = [-1] * len(core_bonds)
     tot = 0
-    for i in xrange(len(core_bonds)):
+    for i in range(len(core_bonds)):
         if comp[i] == -1:
             floodfill(i, tot, comp, core_bonds)
             tot += 1
     
     core_configs = []
-    for cur_id in xrange(tot):
+    for cur_id in range(tot):
         cand_bonds = []
-        for i in xrange(len(core_bonds)):
+        for i in range(len(core_bonds)):
             x,y = core_bonds[i]
             if (x,y) in rbonds and rbonds[(x,y)] == 4:
                 cand_bonds.append((x,y,4))
@@ -427,4 +427,4 @@ if __name__ == "__main__":
 
         r = r.split('>')[0]
         smiles2graph(r, cand_bonds[:9], gbonds, cutoff=-1)
-    print good
+    print (good)

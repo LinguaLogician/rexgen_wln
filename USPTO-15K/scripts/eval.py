@@ -119,4 +119,4 @@ if __name__ == "__main__":
         if rk <= 3: top3 += 1
         if rk <= 5: top5 += 1
 
-        print '%.4f, %.4f, %.4f' % (top1 / n, top3 / n, top5 / n)
+        print( '%.4f, %.4f, %.4f' % (top1 / n, top3 / n, top5 / n))
