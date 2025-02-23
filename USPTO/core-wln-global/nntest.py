@@ -139,7 +139,7 @@ try:
                 y = k % cur_dim + 1
                 if x < y and  x in ratoms and y in ratoms:
                     print("%d-%d" % (x, y)),
-            print
+            print()
 except Exception as e:
     sys.stderr.write(e)
     coord.request_stop(e)

@@ -14,8 +14,10 @@ NK = 20
 NK0 = 10
 
 parser = OptionParser()
-parser.add_option("-t", "--train", dest="train_path")
-parser.add_option("-m", "--save_dir", dest="save_path")
+parser.add_option("-t", "--train", dest="train_path",
+                  default="/home/liangtao/Development/ChemistrySpace/rexgen_wln/USPTO/data/train.txt")
+parser.add_option("-m", "--save_dir", dest="save_path",
+                  default="/home/liangtao/Development/ChemistrySpace/rexgen_wln/USPTO/checkpoints")
 parser.add_option("-b", "--batch", dest="batch_size", default=20)
 parser.add_option("-w", "--hidden", dest="hidden_size", default=100)
 parser.add_option("-d", "--depth", dest="depth", default=1)
@@ -88,7 +90,8 @@ bmask = tf.to_float(tf.equal(label, INVALID_BOND)) * 10000
 _, topk = tf.nn.top_k(score - bmask, k=NK)
 flat_score = tf.reshape(score, [-1])
 
-loss = tf.nn.sigmoid_cross_entropy_with_logits(flat_score, tf.to_float(flat_label))
+# loss = tf.nn.sigmoid_cross_entropy_with_logits(flat_score, tf.to_float(flat_label))
+loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(flat_label, tf.float32), logits=flat_score)
 loss = tf.reduce_sum(loss * bond_mask)
 
 _lr = tf.placeholder(tf.float32, [])
