@@ -1,6 +1,6 @@
 import tensorflow as tf
 from mol_graph import max_nb
-from utils.nn import *
+from utils.nn import linearND, linear
 
 def gated_convnet(graph_inputs, batch_size=64, hidden_size=300, depth=3, res_block=2):
     input_atom, input_bond, atom_graph, bond_graph, num_nbs, node_mask = graph_inputs
@@ -9,12 +9,12 @@ def gated_convnet(graph_inputs, batch_size=64, hidden_size=300, depth=3, res_blo
     for i in range(depth):
         fatom_nei = tf.gather_nd(atom_features, atom_graph)
         fbond_nei = tf.gather_nd(input_bond, bond_graph)
-        f_nei = tf.concat(3, [fatom_nei, fbond_nei])
+        f_nei = tf.concat([fatom_nei, fbond_nei], axis=-1)
         h_nei = linearND(f_nei, hidden_size, "nei_hidden_%d" % i)
         g_nei = tf.nn.sigmoid(linearND(f_nei, hidden_size, "nei_gate_%d" % i))
         f_nei = h_nei * g_nei
-        mask_nei = tf.reshape(tf.sequence_mask(tf.reshape(num_nbs, [-1]), max_nb, dtype=tf.float32), [batch_size,-1,max_nb,1])
-        f_nei = tf.reduce_sum(f_nei * mask_nei, -2)
+        mask_nei = tf.reshape(tf.sequence_mask(tf.reshape(num_nbs, [-1]), max_nb, dtype=tf.float32), [batch_size, -1, max_nb, 1])
+        f_nei = tf.reduce_sum(f_nei * mask_nei, axis=-2)
         h_self = linearND(atom_features, hidden_size, "self_hidden_%d" % i)
         g_self = tf.nn.sigmoid(linearND(atom_features, hidden_size, "self_gate_%d" % i))
         f_self = h_self * g_self
@@ -22,9 +22,9 @@ def gated_convnet(graph_inputs, batch_size=64, hidden_size=300, depth=3, res_blo
         if res_block is not None and i % res_block == 0 and i > 0:
             atom_features = atom_features + layers[-2]
         layers.append(atom_features)
-    output_gate = tf.nn.sigmoid(linearND(atom_features, hidden_size, "out_gate")) 
+    output_gate = tf.nn.sigmoid(linearND(atom_features, hidden_size, "out_gate"))
     output = node_mask * (output_gate * atom_features)
-    fp = tf.reduce_sum(output, 1)
+    fp = tf.reduce_sum(output, axis=1)
     return atom_features * node_mask, fp
 
 def rcnn_wl_last(graph_inputs, batch_size, hidden_size, depth, training=True):
@@ -32,22 +32,18 @@ def rcnn_wl_last(graph_inputs, batch_size, hidden_size, depth, training=True):
     atom_features = tf.nn.relu(linearND(input_atom, hidden_size, "atom_embedding", init_bias=None))
     layers = []
     for i in range(depth):
-        with tf.variable_scope("WL", reuse=(i > 0)) as scope:
+        with tf.name_scope("WL") as scope:
             fatom_nei = tf.gather_nd(atom_features, atom_graph)
             fbond_nei = tf.gather_nd(input_bond, bond_graph)
-            # 将 fatom_nei 和 fbond_nei 转换为相同的维度
             fatom_nei = linearND(fatom_nei, hidden_size, "nei_atom", init_bias=None)
             fbond_nei = linearND(fbond_nei, hidden_size, "nei_bond", init_bias=None)
-            # 合并处理后的邻居特征
             h_nei = fatom_nei * fbond_nei
             mask_nei = tf.reshape(tf.sequence_mask(tf.reshape(num_nbs, [-1]), max_nb, dtype=tf.float32), [batch_size, -1, max_nb, 1])
-            f_nei = tf.reduce_sum(h_nei * mask_nei, -2)
+            f_nei = tf.reduce_sum(h_nei * mask_nei, axis=-2)
             f_self = linearND(atom_features, hidden_size, "self_atom", init_bias=None)
             layers.append(f_nei * f_self * node_mask)
             new_label = tf.concat([atom_features, f_nei], axis=-1)
             new_label = linearND(new_label, hidden_size, "label_U1")
             atom_features = tf.nn.relu(new_label)
-    fp = tf.reduce_sum(layers[-1], 1)
+    fp = tf.reduce_sum(layers[-1], axis=1)
     return layers[-1], fp
-
-
