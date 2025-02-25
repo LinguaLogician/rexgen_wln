@@ -9,11 +9,17 @@ from optparse import OptionParser
 import threading
 
 parser = OptionParser()
-parser.add_option("-t", "--train", dest="train_path")
+
+parser.add_option("-t", "--train", dest="train_path",
+                  default="/home/liangtao/Development/ChemistrySpace/rexgen_wln/USPTO/data/train.txt")
+parser.add_option("-m", "--save_dir", dest="save_path",
+                  default="/home/liangtao/Development/ChemistrySpace/rexgen_wln/USPTO/checkpoints")
+
+# parser.add_option("-t", "--train", dest="train_path")
 parser.add_option("-p", "--cand", dest="cand_path", default=None)
 parser.add_option("-c", "--ncore", dest="core_size", default=10)
 parser.add_option("-a", "--ncand", dest="cand_size", default=500)
-parser.add_option("-m", "--save_dir", dest="save_path")
+# parser.add_option("-m", "--save_dir", dest="save_path")
 parser.add_option("-w", "--hidden", dest="hidden_size", default=100)
 parser.add_option("-d", "--depth", dest="depth", default=1)
 parser.add_option("-n", "--max_norm", dest="max_norm", default=100.0)

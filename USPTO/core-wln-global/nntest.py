@@ -10,6 +10,9 @@ from functools import partial
 import threading
 from multiprocessing import Queue
 
+from rdkit import RDLogger
+RDLogger.DisableLog('rdApp.*')
+
 NK = 40
 
 parser = OptionParser()

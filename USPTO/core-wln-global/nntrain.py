@@ -1,14 +1,14 @@
-import tensorflow as tf
-from utils.nn import linearND, linear
+
 from mol_graph import atom_fdim as adim, bond_fdim as bdim, max_nb, smiles2graph_list as _s2g
 from models import *
 from ioutils import *
-import math, sys, random
-from collections import Counter
+import sys, random
 from optparse import OptionParser
 from functools import partial, reduce
 import threading
 from multiprocessing import Queue
+from rdkit import RDLogger
+RDLogger.DisableLog('rdApp.*')
 
 NK = 20
 NK0 = 10
@@ -79,7 +79,6 @@ att_context = tf.reduce_sum(att_context, 2)
 att_context1 = tf.reshape(att_context, [batch_size, 1, -1, hidden_size])
 att_context2 = tf.reshape(att_context, [batch_size, -1, 1, hidden_size])
 att_pair = att_context1 + att_context2
-
 pair_hidden = linearND(atom_pair, hidden_size, scope="atom_feature", init_bias=None) + linearND(binary, hidden_size, scope="bin_feature", init_bias=None) + linearND(att_pair, hidden_size, scope="ctx_feature")
 pair_hidden = tf.nn.relu(pair_hidden)
 pair_hidden = tf.reshape(pair_hidden, [batch_size, -1, hidden_size])
@@ -90,21 +89,29 @@ bmask = tf.to_float(tf.equal(label, INVALID_BOND)) * 10000
 _, topk = tf.nn.top_k(score - bmask, k=NK)
 flat_score = tf.reshape(score, [-1])
 
+
+
+
 # loss = tf.nn.sigmoid_cross_entropy_with_logits(flat_score, tf.to_float(flat_label))
 loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(flat_label, tf.float32), logits=flat_score)
 loss = tf.reduce_sum(loss * bond_mask)
 
 _lr = tf.placeholder(tf.float32, [])
 optimizer = tf.train.AdamOptimizer(learning_rate=_lr)
+
+
 param_norm = tf.global_norm(tf.trainable_variables())
 grads_and_vars = optimizer.compute_gradients(loss / batch_size) #+ beta * param_norm)
 grads, var = zip(*grads_and_vars)
 grad_norm = tf.global_norm(grads)
+
+
 new_grads, _ = tf.clip_by_global_norm(grads, max_norm)
 grads_and_vars = zip(new_grads, var)
 backprop = optimizer.apply_gradients(grads_and_vars)
 
 tf.global_variables_initializer().run(session=session)
+
 size_func = lambda v: reduce(lambda x, y: x*y, v.get_shape().as_list())
 n = sum(size_func(v) for v in tf.trainable_variables())
 print("Model size: %dK" % (n/1000,))
